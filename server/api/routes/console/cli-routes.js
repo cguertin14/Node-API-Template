@@ -1,5 +1,5 @@
-import routeListing from './routesListing';
-import userRoutes from './../../../routes/users';
+import RoutesHelper from './routesListing';
+import userRoutes from './../users';
 
 // List all routes.
-routeListing('/users', userRoutes.stack);
+RoutesHelper.print('/users', userRoutes.stack);
