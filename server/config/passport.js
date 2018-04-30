@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as BearerStrategy } from 'passport-http-bearer';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { User } from './../models/user';
+import { User } from './../api/models/user';
 
 
 // Bearer config....

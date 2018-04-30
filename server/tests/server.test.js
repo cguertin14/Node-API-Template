@@ -3,18 +3,16 @@ import request from 'supertest';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import { app } from './../server';
-import { Todo } from './../models/todo';
 import { User } from './../models/user';
-import { todos, populateTodos, users, populateUsers } from './seed/seed';
+import { users, populateUsers } from './seed/seed';
 
 beforeEach(populateUsers);
-beforeEach(populateTodos);
 
 describe('GET /users/me', () => {
     it('should return a user if authenticated', (done) => {
         request(app)
             .get('/users/me')
-            .set('x-auth', users[0].tokens[0].token)
+            .set('Authorization', `Bearer ${users[0].tokens[0].token}`)
             .expect(200)
             .expect((res) => {
                 expect(res.body._id).toBe(users[0]._id.toHexString());
