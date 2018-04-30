@@ -1,5 +1,5 @@
 import UserController from './../controllers/userController';
-import { bearer } from './../middleware/authenticate';
+import { bearer } from './../middlewares/authenticate';
 import express from 'express';
 const router = express.Router();
 
