@@ -3,7 +3,7 @@ import request from 'supertest';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import { app } from './../server';
-import { User } from './../models/user';
+import { User } from './../api/models/user';
 import { users, populateUsers } from './seed/seed';
 
 beforeEach(populateUsers);

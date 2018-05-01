@@ -1,13 +1,9 @@
 import { User } from './../models/user';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+import BaseController from './baseController';
 
-export default class UserController {
-    constructor(req, res) {
-        this.req = req;
-        this.res = res;
-    }
-
+export default class UserController extends BaseController {
     async signUp() {
         try {
             let body = _.pick(this.req.body, ['email', 'password']);

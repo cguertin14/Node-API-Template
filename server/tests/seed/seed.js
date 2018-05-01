@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { User } from './../../models/user';
+import { User } from './../../api/models/user';
 import jwt from 'jsonwebtoken';
 
 // Seed data
@@ -30,15 +30,12 @@ const users = [
     },
 ];
 
-const populateUsers = (done) => {
-    User.remove({}).then(() => {
-        let userOne = new User(users[0]).save();
-        let userTwo = new User(users[1]).save();
-        return Promise.all([userOne, userTwo]);
-    }).then(() => done());
+const populateUsers = async (done) => {
+    await User.remove({})
+    let userOne = new User(users[0]).save();
+    let userTwo = new User(users[1]).save();
+    await Promise.all([userOne, userTwo]);
+    done();
 };
 
-module.exports = {
-    users,
-    populateUsers
-}
+export { users, populateUsers };
