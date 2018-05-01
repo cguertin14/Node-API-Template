@@ -7,7 +7,7 @@ export const bearer = (req,res,next) => {
         if (err) { return next(err); }
 
         //authentication error
-        if (!user) { return res.json({error: info.message || 'Invalid Token'}) }
+        if (!user) { return res.status(401).json({error: info.message || 'Invalid Token'}) }
 
         //success
         let bearer = req.headers.authorization; 

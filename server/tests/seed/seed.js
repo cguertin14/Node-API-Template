@@ -30,12 +30,12 @@ const users = [
     },
 ];
 
-const populateUsers = async (done) => {
-    await User.remove({})
-    let userOne = new User(users[0]).save();
-    let userTwo = new User(users[1]).save();
-    await Promise.all([userOne, userTwo]);
-    done();
+const populateUsers = (done) => {
+    User.remove({}).then(() => {
+        let userOne = new User(users[0]).save();
+        let userTwo = new User(users[1]).save();
+        return Promise.all([userOne, userTwo]);
+    }).then(() => done());
 };
 
 export { users, populateUsers };
