@@ -1,0 +1,20 @@
+{
+    "FACEBOOK": {
+        "clientID": "",
+        "clientSecret": "",
+        "callbackURL": "",
+        "profileFields": [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "gender",
+            "picture.width(400).height(400)"
+        ]
+    },
+    "GOOGLE": {
+        "clientID": "",
+        "clientSecret": "",
+        "callbackURL": ""
+    }
+}

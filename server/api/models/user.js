@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import findOrCreate from 'mongoose-findorcreate';
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -21,6 +22,14 @@ const UserSchema = new mongoose.Schema({
         required: true,
         minlength: 6,
     },
+    facebookId: {
+        type: String,
+        required: false,
+    },
+    googleId: {
+        type: String,
+        required: false
+    },
     tokens: [
         {
             access: {
@@ -34,6 +43,9 @@ const UserSchema = new mongoose.Schema({
         }
     ]
 });
+
+// Plugins
+UserSchema.plugin(findOrCreate);
 
 // Methods
 UserSchema.methods.toJSON = function () {
