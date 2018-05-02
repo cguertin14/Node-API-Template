@@ -3,7 +3,7 @@ import { Strategy as BearerStrategy } from 'passport-http-bearer';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { User } from './../api/models/user';
-import socialConfig from './social.json';
+import socialConfig from './json/social.json';
 
 // Bearer config....
 passport.use(new BearerStrategy(
