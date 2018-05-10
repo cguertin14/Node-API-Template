@@ -17,7 +17,7 @@ router.post('/signup', async (req, res) => {
     await new FacebookController(req, res).signUp();
 });
 
-router.post('/link', async (req, res) => {
+router.put('/link', async (req, res) => {
     await new FacebookController(req, res).linkAccount();
 });
 
