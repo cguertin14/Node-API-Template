@@ -1,8 +1,8 @@
 {
     "FACEBOOK": {
-        "clientID": "",
-        "clientSecret": "",
-        "callbackURL": "",
+        "clientID": "CLIENT ID HERE",
+        "clientSecret": "CLIENT SECRET HERE",
+        "callbackURL": "CALLBACK URL HERE",
         "profileFields": [
             "id",
             "email",
@@ -13,8 +13,8 @@
         ]
     },
     "GOOGLE": {
-        "clientID": "",
-        "clientSecret": "",
-        "callbackURL": ""
+        "clientID": "CLIENT ID HERE",
+        "clientSecret": "CLIENT SECRET HERE",
+        "callbackURL": "CALLBACK URL HERE"
     }
 }

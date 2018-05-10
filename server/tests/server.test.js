@@ -85,12 +85,14 @@ describe('GET /users/me', () => {
 describe('POST /users', () => {
     it('should create a user', (done) => {
         let email = 'example@example.com';
+        let firstName = 'Martin';
+        let lastName = 'Deschamps';
         let password = '123456';
 
         request(app)
             .post('/users')
             .type('urlencoded')
-            .send({ email, password })
+            .send({ email, password, firstName, lastName })
             .expect(201)
             .expect(res => {
                 expect(res.body.token).toBeTruthy();
@@ -111,34 +113,38 @@ describe('POST /users', () => {
     });
 
     it('should return a validation errors if request is invalid', (done) => {
-        let email = 'example.com';
+        let email = 'test@example.com';
+        let firstName = 'Martin';
+        let lastName = 'Deschamps';
         let password = '123456';
 
         request(app)
             .post('/users')
             .type('urlencoded')
-            .send({ email, password })
-            .expect(400)
+            .send({ email, password, firstName, lastName })
+            .expect(406)
             .end(done);
     });
 
     it('should not create a user if email in use', (done) => {
         let email = users[0].email;
         let password = '123456';
+        let firstName = 'Martin';
+        let lastName = 'Deschamps';
 
         request(app)
             .post('/users')
             .type('urlencoded')
-            .send({ email, password })
-            .expect(400)
+            .send({ email, password, firstName, lastName })
+            .expect(406)
             .end(done);
     });
 });
 
-describe('DELETE /users/me/token', () => {
+describe('DELETE /users/logout', () => {
     it('should remove token on logout', (done) => {
         request(app)
-            .delete('/users/me/token')
+            .delete('/users/logout')
             .type('urlencoded')
             .set('authorization', `Bearer ${users[0].tokens[0].token}`)
             .expect(200)

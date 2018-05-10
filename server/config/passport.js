@@ -21,19 +21,19 @@ passport.use(new BearerStrategy(
 ));
 
 // Facebook config....
-/*passport.use(new FacebookStrategy(socialConfig['FACEBOOK'],
+passport.use(new FacebookStrategy(socialConfig.FACEBOOK,
     function (accessToken, refreshToken, profile, cb) {
         User.findOrCreate({ facebookId: profile.id }, function (err, user) {
             return cb(err, user);
         });
     }
-));*/
+));
 
 // Google config....
-/*passport.use(new GoogleStrategy(socialConfig['GOOGLE'],
+passport.use(new GoogleStrategy(socialConfig.GOOGLE,
     function (token, refreshToken, profile, done) {
         User.findOrCreate({ googleId: profile.id }, function (err, user) {
             return cb(err, user);
         });
     }
-));*/
+));

@@ -1,8 +1,13 @@
 import { User } from './../../models/user';
 import _ from 'lodash';
-import { ObjectId } from 'mongodb';
-import BaseController from './../baseController';
+import SocialController from './socialController';
 
-export default class FacebookController extends BaseController {
-    
+export default class FacebookController extends SocialController {
+    async signUp() {
+
+    }
+
+    async linkAccount() {
+
+    }
 }

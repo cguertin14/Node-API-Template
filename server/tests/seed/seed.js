@@ -9,6 +9,8 @@ const users = [
     {
         _id: userOneId,
         email: 'cg@live.ca',
+        firstName: 'Charles',
+        lastName: 'Guertin',
         password: 'userOnePass',
         tokens: [
             {
@@ -20,6 +22,8 @@ const users = [
     {
         _id: userTwoId,
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'Example',
         password: 'userTwoPass',
         tokens: [
             {
