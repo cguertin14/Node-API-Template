@@ -3,5 +3,9 @@ export default class BaseController {
         this.req = req;
         this.res = res;
         this.user = req.user;
+
+        this._init();
     }
+
+    _init() {}
 }

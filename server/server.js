@@ -7,6 +7,7 @@ import rateLimiter from './config/rateLimiter';
 import userRoutes from './api/routes/users';
 import facebookRoutes from './api/routes/facebook';
 import googleRoutes from './api/routes/google';
+import imageRoutes from './api/routes/image';
 
 // Express config
 const port = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use(passport.session());
 app.use('/users', userRoutes);
 app.use('/facebook', facebookRoutes);
 app.use('/google', googleRoutes);
+app.use('/image', imageRoutes);
 
 // Listener.
 app.listen(port, () => {
