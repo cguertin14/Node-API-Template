@@ -20,9 +20,9 @@ export default class ImageController extends BaseController {
         /*imageCache.getCache(`${process.env.URL}/image/${image._id.toString()}`, (err, res) => {
             
         });*/
-        
+
         const buffer = new Buffer(image.content, 'base64');
-        this.res.writeHead({
+        this.res.writeHead(200, {
             'Content-Type': 'image/png',
             'Content-Length': buffer.length
         });
