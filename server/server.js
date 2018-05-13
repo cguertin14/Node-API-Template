@@ -1,3 +1,4 @@
+// Imports.
 import './config/config.js';
 import './config/passport.js';
 import './db/mongoose';
@@ -9,13 +10,13 @@ import facebookRoutes from './api/routes/facebook';
 import googleRoutes from './api/routes/google';
 import imageRoutes from './api/routes/image';
 
-// Express config
+// Express config.
 const port = process.env.PORT || 3000;
 const app = express();
 
 // Express plugins.
 app.use(express.static('public'));
-app.use(require('body-parser').urlencoded({ extended: false }));
+app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('cors')());
 app.use(require('express-validator')());
 app.use(rateLimiter);
