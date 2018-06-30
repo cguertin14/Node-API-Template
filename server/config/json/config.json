@@ -1,12 +1,14 @@
 {
    "test": {
        "PORT": 3000,
-       "MONGODB_URI": "mongodb://localhost:27017/TemplateAppTest",
-       "JWT_SECRET": "sgnfsdgndsfgaebnjadf23jb2eutb21213rf"
+       "MONGODB_URI": "mongodb://localhost:27017/NightplannerTest",
+       "JWT_SECRET": "<secret_here>",
+       "JWT_EXPIRES_IN": 900
    },
    "development": {
        "PORT": 3000,
-       "MONGODB_URI": "mongodb://localhost:27017/TemplateApp",
-       "JWT_SECRET": "gjfdjjfsjhk3jkj1jj41kbwewq1e2b2rr2b1"
+       "MONGODB_URI": "mongodb://localhost:27017/Nightplanner",
+       "JWT_SECRET": "<secret_here>",
+       "JWT_EXPIRES_IN": 900
    }
 }

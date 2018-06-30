@@ -1,39 +1,52 @@
 import passport from 'passport';
-import { Strategy as BearerStrategy } from 'passport-http-bearer';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
-import { User } from './../api/models/user';
-import socialConfig from './json/social.json';
+import { Strategy as LocalSrategy } from 'passport-local';
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import { User } from './../api/models/User';
 
 // Bearer config....
-passport.use(new BearerStrategy(
-    async function (token, done) {
+passport.use(new LocalSrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+},
+    async function (email, password, done) {
         try {
-            let user = await User.findByToken(token);
+            let user = await User.findByCredentials(email, password);
             if (!user) {
-                return done(null, false)
-            }
-            return done(null, user, { scope: 'all' });
+                return done(null, false, { message: 'Incorrect email or password.' });
+            }         
+            return done(null, user, { message: 'Logged in' });
         } catch (e) {
-            return done(e);
+            return done(e, false);
         }
     }
 ));
 
-// Facebook config....
-passport.use(new FacebookStrategy(socialConfig.FACEBOOK,
-    function (accessToken, refreshToken, profile, cb) {
-        User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-            return cb(err, user);
-        });
+// JWT config...
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET
+},
+    async function (jwtPayload, done) {
+        try {
+            const user = await User.findById(jwtPayload._id).cache();
+            if (!user) {
+                return done(null, false);
+            }
+            return done(null, user);
+        } catch (e) {
+            return done(e, false);
+        }
     }
 ));
 
-// Google config....
-passport.use(new GoogleStrategy(socialConfig.GOOGLE,
-    function (token, refreshToken, profile, done) {
-        User.findOrCreate({ googleId: profile.id }, function (err, user) {
-            return cb(err, user);
-        });
-    }
-));
+// Session configuration.
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
+

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/TemplateApp');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Nightplanner');
 
 export default { mongoose };

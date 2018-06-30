@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { User } from './../../api/models/user';
+import { User } from './../../api/models/User';
 import jwt from 'jsonwebtoken';
 
 // Seed data
@@ -11,6 +11,7 @@ const users = [
         email: 'cg@live.ca',
         firstName: 'Charles',
         lastName: 'Guertin',
+        gender: 'male',
         password: 'userOnePass',
         tokens: [
             {
@@ -24,6 +25,7 @@ const users = [
         email: 'test@example.com',
         firstName: 'Test',
         lastName: 'Example',
+        gender: 'female',
         password: 'userTwoPass',
         tokens: [
             {

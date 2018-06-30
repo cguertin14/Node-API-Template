@@ -1,8 +1,8 @@
 {
     "FACEBOOK": {
-        "clientID": "CLIENT ID HERE",
-        "clientSecret": "CLIENT SECRET HERE",
-        "callbackURL": "CALLBACK URL HERE",
+        "appId": "247999635942850",
+        "appSecret": "1bdc9558ba7fb1ccea6970081cbd9f05",
+        "callbackURL": "http://localhost:3000/facebook/login/callback",
         "profileFields": [
             "id",
             "email",
@@ -11,10 +11,5 @@
             "gender",
             "picture.width(400).height(400)"
         ]
-    },
-    "GOOGLE": {
-        "clientID": "CLIENT ID HERE",
-        "clientSecret": "CLIENT SECRET HERE",
-        "callbackURL": "CALLBACK URL HERE"
     }
 }

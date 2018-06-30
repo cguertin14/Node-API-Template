@@ -1,0 +1,13 @@
+{
+    "gcm": {
+        "id": "AIzaSyD-AoF5ICyNhe01kO_YpvckC3-c3lb6VcQ"
+    },
+    "apn": {
+        "production": false,
+        "cert": "./Dev-Notifs-Certificate.pem",
+        "passphrase": "Artifextech456",
+        "port": 2195,
+        "connectTimeout": 60,
+        "connectionTimeout": 60
+    }
+}

@@ -1,7 +1,9 @@
 # Summary
 
-Template of a Node.js REST API to integrate in back-end projects.
+REST API Template written in Node.js.
 
+## Status
+[![Build Status](https://travis-ci.com/cguertin14/****PROJECTNAME****)](https://travis-ci.com/cguertin14/*****PROJECTNAME*****)
 
 ## Author 
 
@@ -43,7 +45,3 @@ Middlewares can be added at anytime in the '/server/api/middlewares' folder.
 * Mongoose.js
 * Mocha.js
 * JWT
-
-## That's it!
-
-Enjoy developing back-end servers using Node.js and this very template!

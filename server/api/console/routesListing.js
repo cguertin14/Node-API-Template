@@ -3,9 +3,7 @@ import Table from 'cli-table';
 export default class RoutesHelper {
     static print(baseUrl, routes) {
         let table = new Table({ head: ["", "Path"] });
-        console.log('\n********************************************');
         console.log('\nROUTES for ' + baseUrl);
-        console.log('\n********************************************');
     
         for (var key in routes) {
             if (routes.hasOwnProperty(key)) {

@@ -1,23 +1,19 @@
 import express from 'express';
 import passport from 'passport';
 import _ from 'lodash';
-import FacebookController from './../controllers/social/facebookController';
-import { bearer, facebook } from './../middlewares/authenticate';
+import FacebookController from './../controllers/facebookController';
+import { bearer } from './../middlewares/authenticate';
 const router = express.Router();
 
-router.post('/login', facebook);
-
-router.get('/login/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    (req, res) => {
-        res.json(_.pick(req, ['user']));
-    });
+router.post('/login', async (req, res) => {
+    await new FacebookController(req, res).login();
+});
 
 router.post('/signup', async (req, res) => {
     await new FacebookController(req, res).signUp();
 });
 
-router.put('/link', async (req, res) => {
+router.put('/link', bearer, async (req, res) => {
     await new FacebookController(req, res).linkAccount();
 });
 

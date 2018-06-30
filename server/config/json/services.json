@@ -1,0 +1,28 @@
+{
+    "twilio": {
+        "development": {
+            "accountSid": "AC551467e524ba75a6166ecc4bfa07e900",
+            "authToken": "c1acd475c8e88195369139ee914e0446",
+            "from": "+15005550006"
+        },
+        "production": {
+            "accountSid": "AC44999809b43f1a85e37c0dfadea2787d",
+            "authToken": "e96e72959c8054ca2e86ad4cc0dbacbd",
+            "from": "+14387955969"
+        }
+    },
+    "stripe": {
+        "development": {
+            "pk": "pk_test_8GJNpITgIqf32lf0y2UKm2JF",
+            "sk": "sk_test_YI5f0HlMRanIdpzfJicYTHWH"
+        },
+        "production": {
+            "pk": "pk_test_8GJNpITgIqf32lf0y2UKm2JF",
+            "sk": "sk_test_YI5f0HlMRanIdpzfJicYTHWH"
+        }
+    },
+    "s3": {
+        "accessKeyId": "AKIAIJM2PGUZRNO652IQ",
+        "secretAccessKey": "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"
+    }
+}

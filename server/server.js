@@ -1,37 +1,44 @@
 // Imports.
-import './config/config.js';
-import './config/passport.js';
+import './config/config';
+import './config/passport';
 import './db/mongoose';
+import './config/i18n';
+import './config/cache';
 import express from 'express';
 import passport from 'passport';
-import rateLimiter from './config/rateLimiter';
-import userRoutes from './api/routes/users';
-import facebookRoutes from './api/routes/facebook';
-import googleRoutes from './api/routes/google';
-import imageRoutes from './api/routes/image';
 
 // Express config.
 const port = process.env.PORT || 3000;
 const app = express();
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
 // Express plugins.
+app.use(require('helmet')());
 app.use(express.static('public'));
-app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true, limit: '50mb' }));
 app.use(require('cors')());
 app.use(require('express-validator')());
-app.use(rateLimiter);
+app.use(require('./config/express-validator').default);
+app.use(require('i18n').init);
+app.use(require('./api/middlewares/locale').default);
+app.use(require('./config/rateLimiter').default);
+app.use(require('./config/session').default);
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes.
-app.use('/users', userRoutes);
-app.use('/facebook', facebookRoutes);
-app.use('/google', googleRoutes);
-app.use('/image', imageRoutes);
+app.use('/users', require('./api/routes/user').default);
+app.use('/facebook', require('./api/routes/facebook').default);
+app.use('/images', require('./api/routes/image').default);
+app.use('/friends', require('./api/routes/friend').default);
+app.use('/cards', require('./api/routes/card').default);
+app.use('/notifications', require('./api/routes/notification').default);
 
 // Listener.
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+	console.log(`Server listening on port ${port}`);
 });
 
 export { app };

@@ -1,35 +1,30 @@
+import validator from 'validator';
+import AWS from 'aws-sdk';
+import uuid from 'uuid/v1';
 import BaseController from './baseController';
-import { Image } from './../models/image';
-import imageCache from 'image-cache';
-import path from 'path';
-import { encode, decode } from 'node-base64-image';
-
+import { codes, statuses, error } from '../errors/errors';
+import { s3 } from '../../config/json/services.json';
 
 export default class ImageController extends BaseController {
     _init() {
-        imageCache.setOptions({
-            dir: path.join(__dirname, 'server/cache/')
-        });
+        this.s3 = new AWS.S3(s3);
     }
 
-    async get(id) {
-        const image = await Image.findById(id);
-        if (!image) return this.res.status(404).json({ error: 'Image not found' });
-
-        // Cache and make image then return it to the client (CONTENT -> BASE64).
-        /*imageCache.getCache(`${process.env.URL}/image/${image._id.toString()}`, (err, res) => {
-            
-        });*/
-
-        const buffer = new Buffer(image.content, 'base64');
-        this.res.writeHead(200, {
-            'Content-Type': 'image/png',
-            'Content-Length': buffer.length
-        });
-        return this.res.end(buffer);
-    }
-
-    async upload() {
-
+    upload() {
+        try {
+            const key = `${this.user.id}/${uuid()}.png`;
+            this.s3.getSignedUrl('putObject', {
+                Bucket: 'nightplanner',
+                ContentType: 'image/png',
+                Key: key
+            }, (err, url) => {
+                if (err) throw err;
+                return this.res.json({ key, url });
+            })
+        } catch (e) {
+            return this.res.status(statuses.NOT_ACCEPTABLE).json(
+                error(codes.UNACCEPTABLE_CONTENT_ERROR, e.message)
+            );
+        }
     }
 }
