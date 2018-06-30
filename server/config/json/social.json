@@ -1,7 +1,7 @@
 {
     "FACEBOOK": {
-        "appId": "247999635942850",
-        "appSecret": "1bdc9558ba7fb1ccea6970081cbd9f05",
+        "appId": "<id_here>",
+        "appSecret": "<secret_here>",
         "callbackURL": "http://localhost:3000/facebook/login/callback",
         "profileFields": [
             "id",

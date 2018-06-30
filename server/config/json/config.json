@@ -1,13 +1,13 @@
 {
    "test": {
        "PORT": 3000,
-       "MONGODB_URI": "mongodb://localhost:27017/NightplannerTest",
+       "MONGODB_URI": "mongodb://localhost:27017/Template-API",
        "JWT_SECRET": "<secret_here>",
        "JWT_EXPIRES_IN": 900
    },
    "development": {
        "PORT": 3000,
-       "MONGODB_URI": "mongodb://localhost:27017/Nightplanner",
+       "MONGODB_URI": "mongodb://localhost:27017/Template-API",
        "JWT_SECRET": "<secret_here>",
        "JWT_EXPIRES_IN": 900
    }
