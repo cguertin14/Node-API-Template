@@ -1,13 +1,12 @@
 {
-    "gcm": {
-        "id": "AIzaSyD-AoF5ICyNhe01kO_YpvckC3-c3lb6VcQ"
+  "gcm": {
+    "id": "<GCM_ID_HERE>"
+  },
+  "apn": {
+    "token": {
+      "teamId": "<TEAM_ID_HERE>",
+      "keyId": "<KEY_ID_HERE>"
     },
-    "apn": {
-        "production": false,
-        "cert": "./Dev-Notifs-Certificate.pem",
-        "passphrase": "Artifextech456",
-        "port": 2195,
-        "connectTimeout": 60,
-        "connectionTimeout": 60
-    }
+    "passphrase": "<PASS_HERE>"
+  }
 }

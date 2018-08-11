@@ -1,6 +1,6 @@
-import ImageController from './../controllers/imageController';
+import ImageController from '../controllers/imageController';
 import express from 'express';
-import { bearer } from './../middlewares/authenticate';
+import { bearer } from '../middlewares/authenticate';
 const router = express.Router();
 
 router.get('/upload', bearer, (req, res) => {

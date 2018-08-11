@@ -1,28 +1,29 @@
 {
     "twilio": {
         "development": {
-            "accountSid": "<secret_here>",
-            "authToken": "<secret_here>",
-            "from": "+<number_here>"
+            "accountSid": "<SID_HERE>",
+            "authToken": "<TOKEN_HERE>",
+            "from": "<NUMBER_HERE>"
         },
         "production": {
-            "accountSid": "<secret_here>",
-            "authToken": "<secret_here>",
-            "from": "+<number_here>"
+            "accountSid": "<SID_HERE>",
+            "authToken": "<TOKEN_HERE>",
+            "from": "<NUMBER_HERE>"
         }
     },
     "stripe": {
         "development": {
-            "pk": "<secret_here>",
-            "sk": "<secret_here>"
+            "pk": "<PK_KEY_HERE>",
+            "sk": "<SK_KEY_HERE>"
         },
         "production": {
-            "pk": "<secret_here>",
-            "sk": "<secret_here>"
+            "pk": "<PK_KEY_HERE>",
+            "sk": "<SK_KEY_HERE>"
         }
     },
     "s3": {
-        "accessKeyId": "<secret_here>",
-        "secretAccessKey": "<secret_here>"
+        "url": "https://s3.amazonaws.com/<URL_HERE>",
+        "accessKeyId": "<KEY_ID_HERE>",
+        "secretAccessKey": "<ACCESS_KEY_HERE>"
     }
 }

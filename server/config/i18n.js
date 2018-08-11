@@ -2,13 +2,12 @@ import path from 'path';
 import i18n from 'i18n';
 import { app } from '../server';
 
-
 /**
  * Locale object.
  */
 i18n.configure({
     // Available locales
-    locales: ['en','fr'],
+    locales: ['en', 'fr'],
     // Path of the locale files
     directory: path.join(__dirname + '/../locales'),
     // Default locale

@@ -13,6 +13,18 @@
             "env": {
                 "NODE_ENV": "development"
             }
+        },
+        {
+            "script": "index-worker.js",
+            "exec_interpreter": "babel-node",
+            "autorestart": true,
+            "watch": true,
+            "ignore_watch": [
+                "node_modules"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            }
         }
     ]
 }

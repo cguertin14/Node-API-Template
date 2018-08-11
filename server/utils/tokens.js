@@ -1,10 +1,10 @@
-import { ExtractJwt } from 'passport-jwt';
+import { ExtractJwt } from 'passport-jwt/lib';
 import jwt from 'jsonwebtoken';
 import randtoken from 'rand-token';
 import redis from 'redis';
 import moment from 'moment';
 import { error, codes, statuses } from '../api/errors/errors';
-const client = redis.createClient(process.env.REDISCLOUD_URL || 'redis://127.0.0.1:6379');
+const client = redis.createClient(process.env.REDISCLOUD_URL || 'redis://redis:6379');
 client.select(1, () => {});
 client.get = require('util').promisify(client.get);
 
@@ -17,9 +17,9 @@ client.get = require('util').promisify(client.get);
 export const isTokenBlacklisted = async (req) => {
     try {
         const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-        const decoded = jwt.decode(token, process.env.JWT_SECRET);
+        jwt.decode(token, process.env.JWT_SECRET);
         return await client.get(token);
-    } catch (e) {
+    } catch (e) { 
         throw e;
     }
 };
@@ -34,8 +34,8 @@ export const blacklistToken = async (request) => {
     try {
         const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
         const decoded = jwt.decode(token, process.env.JWT_SECRET);
-        const expiration = new Date(moment(decoded.exp * 1000 + 900)).getMinutes() - new Date().getMinutes();
-        await client.set(token, 'blacklisted', 'EX', expiration * 60);
+        const expiration = new Date(moment(decoded.exp * 1000 + 9999999)).getMinutes();
+        await client.set(token, 'blacklisted', 'EX', expiration * 9999999);
     } catch (e) {
         throw e;
     }
@@ -53,7 +53,7 @@ export const setTokens = (user, res) => {
 
     // Change refresh key and token.
     const secretRefresh = randtoken.generate(50);
-    res.cookie('JWT_REFRESH', secretRefresh, { maxAge: 900000, httpOnly: true });
+    res.cookie('JWT_REFRESH', secretRefresh, { maxAge: 9999999000, httpOnly: true });
     const refreshToken = jwt.sign({ _id: user._id }, secretRefresh);
 
     return { token, refreshToken };
@@ -77,4 +77,4 @@ export const tokenValidation = (e, res) => {
     return res.status(statuses.UNAUTHORIZED).json(
         error(codes.UNACCEPTABLE_CONTENT_ERROR, e.message)
     );
-}
+};

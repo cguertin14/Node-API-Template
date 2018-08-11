@@ -5,7 +5,7 @@ import './db/mongoose';
 import './config/i18n';
 import './config/cache';
 import express from 'express';
-import passport from 'passport';
+import passport from 'passport/lib';
 
 // Express config.
 const port = process.env.PORT || 3000;
@@ -36,9 +36,16 @@ app.use('/friends', require('./api/routes/friend').default);
 app.use('/cards', require('./api/routes/card').default);
 app.use('/notifications', require('./api/routes/notification').default);
 
+// Global error handler.
+app.use(require('./api/exceptions/errorRegister').errorHandler);
+
 // Listener.
-app.listen(port, () => {
+export const server = app.listen(port, () => {
 	console.log(`Server listening on port ${port}`);
+});
+
+export const queue = require('kue').createQueue({
+	redis: process.env.REDISCLOUD_URL || 'redis://redis:6379'
 });
 
 export { app };

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const redis = require('redis');
 const { promisify } = require('util');
 
-const client = redis.createClient(process.env.REDISCLOUD_URL || 'redis://127.0.0.1:6379');
+const client = redis.createClient(process.env.REDISCLOUD_URL || 'redis://redis:6379');
 client.select(1, () => {});
 client.get = promisify(client.get);
 const { exec } = mongoose.Query.prototype;

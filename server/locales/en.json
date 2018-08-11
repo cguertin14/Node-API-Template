@@ -11,10 +11,14 @@
 	"InvalidArrayContent %s": "'%s' does not contain valid data.",
 	"InvalidFormat %s": "'%s' is not in a valid format.",
 	"InvalidDate %s": "'%s' must be greather than right now.",
+	"InvalidPreviousDate %s": "'%s' must be before right now.",
 	"InternalError": "An internal error occured, please try again later.",
 	"InvalidData": "Provided data is invalid, please edit it and try again.",
 	"NotEditable %s": "'%s' cannot be modified.",
 	"UniqueArray %s": "'%s' must only store unique values.",
+	"InvalidUrl": "Wrong URL.",
+	"NegativeNumber %s": "'%s' must be greater or equal to 0.",
+	"Unauthorized": "You cannot execute this action.",
 	
 	"_comment": "User responses.",
 	"SignUpFailed": "There was an error while creating an account, please try again.",
@@ -29,6 +33,10 @@
 	"DeviceTokenExists": "Device already registered.",
 	"PasswordLength %s": "%s must be at least 6 characters long.",
 	"PasswordHasntChanged": "Password must be different than the actual one.",
+	"WrongPassword": "Wrong password, please try again.",
+	"InvalidGender": "Gender can either be male, female or other.",
+	"InvalidPhoneNumber": "Invalid phone number.",
+	"InvalidCountry": "Invalid country.",
 
 	"_comment1": "Locale responses.",
 	"LocaleRequired": "The new locale is required.",
@@ -45,19 +53,23 @@
 
 	"_comment4": "CRUD responses",
 	"Updated %s": "%s successfully updated!",
-	"Removed %s": "%s successfully cleared!",
+	"Removed %s": "%s successfully removed!",
 	"Created %s": "%s successfully created!",
 
 	"_comment6": "Friend responses",
 	"FriendExists": "You already have this friend in your friend list.",
-	"InvalidFriendStatus": "Status must be either accepted or refused.",
+	"InvalidStatus": "Status must be either accepted or refused.",
 	"FriendRequestAlreadySent": "Friend request already sent.",
 	"FriendRequestAccepted": "Friend request successfully accepted.",
 	"FriendRequestRefused": "Friend request successfully refused.",
 	"FriendRequestSent": "Friend request successfully sent!",
 	"FriendInvitedMe %s": "%s already sent you an friend invite.",
 	"FriendIsMe": "You cannot add yourself as a friend.",
+	"NewFriendTitle": "New Friend",
+	"NewFriendBody %s": "%s accepted your friend request!",
+	"NewFriendInvitationTitle": "New Friend Request",
+	"NewFriendInvitationBody %s": "%s added you as a friend!",
 
 	"_comment8": "Card responses",
-	"DefaultCard": "Default card successfully set!"
+	"DefaultCard": "Default card successfully set!",
 }

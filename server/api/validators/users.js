@@ -15,36 +15,16 @@ export default class UserValidator extends Validator {
         this.checkBody('firstName', this.__('Required %s', 'Firstname')).notEmpty();
         this.checkBody('lastName', this.__('Required %s', 'Lastname')).notEmpty();
         this.checkBody('gender', this.__('Required %s', 'Gender')).notEmpty();
+        if (this.req.body.gender !== undefined) {
+            this.checkBody('gender', this.__('InvalidGender')).custom(value => /\b(male|female|other)\b/.test(value));
+        }
         if (this.req.body.password !== undefined) {
             this.checkBody('password', this.__('PasswordLength %s', 'password')).custom(password => password.length >= 6);
         }
         if (this.req.body.birthdate !== undefined) {
-            this.checkBody('birthdate', this.__('InvalidDate %s', 'birthdate')).isShortDate();
             this.checkBody('birthdate', this.__('Required %s', 'birthdate')).notEmpty();
-        }
-        if (this.req.body.musicPreferences !== undefined) {
-            this.checkBody('musicPreferences', this.__('Required %s', 'Music preferences')).notEmpty();
-            this.checkBody('musicPreferences', this.__('NotAnArray %s', 'Music preferences')).isArray();
-            this.checkBody('musicPreferences', this.__('UniqueArray %s', 'Music preferences')).isDistinct();
-            this.checkBody('musicPreferences.*', this.__('InvalidArrayContent %s', 'Music preferences')).exists().isIdValid();
-        }
-        if (this.req.body.venuePreferences !== undefined) {
-            this.checkBody('venuePreferences', this.__('Required %s', 'Venue preferences')).notEmpty();
-            this.checkBody('venuePreferences', this.__('NotAnArray %s', 'Venue preferences')).isArray();
-            this.checkBody('venuePreferences', this.__('UniqueArray %s', 'Venue preferences')).isDistinct();
-            this.checkBody('venuePreferences.*', this.__('InvalidArrayContent %s', 'Venue preferences')).exists().isIdValid();
-        }
-        if (this.req.body.foodPreferences !== undefined) {
-            this.checkBody('foodPreferences', this.__('Required %s', 'Food preferences')).notEmpty();
-            this.checkBody('foodPreferences', this.__('NotAnArray %s', 'Food preferences')).isArray();
-            this.checkBody('foodPreferences', this.__('UniqueArray %s', 'Food preferences')).isDistinct();
-            this.checkBody('foodPreferences.*', this.__('InvalidArrayContent %s', 'Food preferences')).exists().isIdValid();
-        }
-        if (this.req.body.ageRangePreferences !== undefined) {
-            this.checkBody('ageRangePreferences', this.__('Required %s', 'Age Range preferences')).notEmpty();
-            this.checkBody('ageRangePreferences', this.__('NotAnArray %s', 'Age Range preferences')).isArray();
-            this.checkBody('ageRangePreferences', this.__('UniqueArray %s', 'Age Range preferences')).isDistinct();
-            this.checkBody('ageRangePreferences.*', this.__('InvalidArrayContent %s', 'Age Range preferences')).exists().isIdValid();
+            this.checkBody('birthdate', this.__('InvalidFormat %s', 'birthdate')).isShortDate();
+            this.checkBody('birthdate', this.__('InvalidPreviousDate %s', 'birthdate')).isDateLtToday();
         }
         return this.req.validationErrors() || [];
     }
@@ -72,7 +52,7 @@ export default class UserValidator extends Validator {
      */
     registerDevice() {
         this.checkBody('platform', this.__('Required %s', 'platform')).notEmpty();
-        this.checkBody('platform', this.__('InvalidDevice')).custom(value => /(android|ios)/.test(value));
+        this.checkBody('platform', this.__('InvalidDevice')).custom(value => /\b(android|ios)\b/.test(value));
         this.checkBody('token', this.__('Required %s', 'token')).notEmpty();
         return this.req.validationErrors() || [];
     }
@@ -81,6 +61,7 @@ export default class UserValidator extends Validator {
      * @returns { Array }
      */
     changeEmail() {
+        this.checkBody('password', this.__('Required %s', 'password')).notEmpty();
         this.checkBody('newEmail', this.__('Required %s', 'newEmail')).notEmpty();
         if (this.req.body.newEmail !== undefined) {
             this.checkBody('newEmail', this.__('InvalidFormat %s', 'newEmail')).custom(email => validator.isEmail(email));
@@ -92,9 +73,45 @@ export default class UserValidator extends Validator {
      * @returns { Array }
      */
     changePassword() {
+        this.checkBody('password', this.__('Required %s', 'password')).notEmpty();
         this.checkBody('newPassword', this.__('Required %s', 'newPassword')).notEmpty();
         if (this.req.body.newPassword !== undefined) {
             this.checkBody('newPassword', this.__('PasswordLength %s', 'newPassword')).custom(password => password.length >= 6);
+        }
+        return this.validationErrors() || [];
+    }
+
+    /**
+     * @returns { Array }
+     */
+    edit() {
+        const {
+            firstName, lastName, gender, birthdate,
+            country, profileImageUrl
+        } = this.req.body;
+
+        if (firstName !== undefined) {
+            this.checkBody('firstName', this.__('Required %s', 'firstName')).notEmpty();
+        }
+        if (lastName !== undefined) {
+            this.checkBody('lastName', this.__('Required %s', 'lastName')).notEmpty();
+        }
+        if (gender !== undefined) {
+            this.checkBody('gender', this.__('Required %s', 'gender')).notEmpty();
+            this.checkBody('gender', this.__('InvalidGender')).custom(value => /\b(male|female|other)\b/.test(value));
+        }
+        if (country !== undefined) {
+            this.checkBody('country', this.__('Required %s', 'country')).notEmpty();
+            this.checkBody('country', this.__('InvalidCountry')).isValidCountry();
+        }
+        if (profileImageUrl !== undefined) {
+            this.checkBody('profileImageUrl', this.__('Required %s', 'profileImageUrl')).notEmpty();
+            this.checkBody('profileImageUrl', this.__('InvalidUrl')).custom(value => validator.isURL(value));
+        }
+        if (birthdate !== undefined) {
+            this.checkBody('birthdate', this.__('Required %s', 'birthdate')).notEmpty();
+            this.checkBody('birthdate', this.__('InvalidFormat %s', 'birthdate')).isShortDate();
+            this.checkBody('birthdate', this.__('InvalidDate %s', 'birthdate')).isDateLtToday();
         }
         return this.validationErrors() || [];
     }

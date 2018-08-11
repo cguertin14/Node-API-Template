@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import validator from 'validator';
-import { Mongoose } from 'mongoose';
+import countries from '../config/json/countries.json';
 
 /**
  * Base config for a mongoose Schema attribute.
@@ -41,9 +41,9 @@ export const dayConfig = {
     required: true,
     validate: {
         validator(val) {
-            return val >= 1 && val <= 7;
+            return val >= 0 && val <= 6;
         },
-        message: '{VALUE} must be between 1 and 7 (inclusive).'
+        message: '{VALUE} must be between 0 and 6 (inclusive).'
     }
 };
 
@@ -63,7 +63,7 @@ export const dateConfig = (attributes = {}) => {
             message: '{VALUE} must be a valid timestamp.'
         },
         ...attributes
-    }
+    };
 };
 
 /**
@@ -82,5 +82,22 @@ export const refValidator = (model, name) => {
             });
         },
         message: `{VALUE} is not a valid ${name}.`
-    }
+    };
+};
+
+
+/**
+ * Country configuration
+ */
+export const countryConfig = () => {
+    return {
+        type: String,
+		validate: {
+			validator(val) {
+				return countries.map(c => c.name).includes(val);
+			},
+			message: '{VALUE} is not a valid country.'
+		},
+		default: 'Canada'
+	};
 };

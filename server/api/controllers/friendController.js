@@ -1,149 +1,136 @@
-import _ from 'lodash';
 import BaseController from './baseController';
-import { User } from './../models/User';
+import { User } from '../models/User';
+import { Notification } from '../models/Notification';
 import { statuses, codes, error } from '../errors/errors';
 import FriendsValidator from '../validators/friends';
-import { ObjectID } from 'mongodb';
+import NotFoundError from '../exceptions/errors/NotFoundError';
+import NotAcceptableError from '../exceptions/errors/NotAcceptableError';
+import SendNotificationJob from '../jobs/sendNotificationJob';
+import { types } from '../models/Notification';
+import i18n from '../../config/i18n';
 
 export default class FriendController extends BaseController {
-    _init() {
-        this.validator = new FriendsValidator(this);
-    }
+	_init() {
+		this.validator = new FriendsValidator(this);
+	}
 
-    async index() {
-        try {
-            const { friends } = this.user;
-            return this.res.json({ friends });
-        } catch (e) {
-            return this.res.status(statuses.INTERNAL_SERVER_ERROR).json(
-                error(codes.INTERNAL_ERROR, this.__('InternalError'))
-            );
-        }
-    }
+	async index() {
+		let { friends } = this.user;
+		return this.res.json({ friends: friends.map(f => f.toShort()) });
+	}
 
-    async get(id) {
-        try {
-            const friend = this.user.friends.includes(ObjectID(id));
-            if (friend) return this.res.json({ friend: _.omit(friend.toJSON(), ['_id']) });
-            throw new Error();
-        } catch (e) {
-            return this.res.status(statuses.NOT_FOUND).json(
-                error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('NotFound %s', 'friend'))
-            );
-        }
-    }
+	async invites() {
+		const { friendInvites } = this.user;
+		return this.res.json({ friendInvites: friendInvites.map(f => f.toShort()) });
+	}
 
-    async invite(id) {
-        try {
-            if (id === this.user.id) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('FriendIsMe'))
-                );
-            }
+	async get(id) {
+		let friend = this.user.friends.find(f => f._id.toString() === id);
+		if (friend) {
+			friend = await User.populate(friend, [
+				{ path: 'friends', select: 'firstName lastName imageUrl' },
+			]);
+			return this.res.json({ friend });
+		}
+		// Friend doesnt exist.
+		throw new NotFoundError(this.__, 'Friend');
+	}
 
-            const friend = await User.findById(id).cache();
-            if (!friend) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('NotFound %s', 'Friend'))
-                );
-            }
+	async invite(id) {
+		if (id === this.user.id) {
+			return this.res.status(statuses.NOT_ACCEPTABLE).json(
+				error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('FriendIsMe'))
+			);
+		}
 
-            const friendIsInList = this.user.friends.includes(ObjectID(id));
-            const friendInvitedMe = this.user.friendInvites.includes(ObjectID(id));
-            const friendHasReceivedInvitation = friend.friendInvites.includes(ObjectID(this.user.id));
-            if (friendIsInList) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('FriendExists'))
-                );
-            } else if (friendInvitedMe) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('FriendInvitedMe', friend.getFullname()))
-                );
-            } else if (friendHasReceivedInvitation) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('FriendRequestAlreadySent'))
-                );
-            }
+		// Check if friend exists
+		const friend = await User.findById(id).cache();
+		if (!friend) {
+			throw new NotFoundError(this.__, 'User');
+		}
 
-            // Invite friend.
-            friend.friendInvites.push(this.user.id);
-            await friend.save();
-            return this.res.status(statuses.CREATED_OR_UPDATED).json({
-                status: this.__('FriendRequestSent')
-            });
-        } catch (e) {
-            return this.res.status(statuses.INTERNAL_SERVER_ERROR).json(
-                error(codes.INTERNAL_ERROR, this.__('InternalError'))
-            );
-        }
-    }
+		const friendIsInList = this.user.friends.find(f => f._id.toString() === id);
+		const friendInvitedMe = this.user.friendInvites.find(f => f._id.toString() === id);
+		const friendHasReceivedInvitation = friend.friendInvites.find(f => f.toString() === this.user.id.toString());
+		if (friendIsInList) {
+			throw new NotAcceptableError(this.__, this.__('FriendExists'));
+		} else if (friendInvitedMe) {
+			throw new NotAcceptableError(this.__, this.__('FriendInvitedMe %s', friend.getFullname()));
+		} else if (friendHasReceivedInvitation) {
+			throw new NotAcceptableError(this.__, this.__('FriendRequestAlreadySent'));
+		}
 
-    async answer(id) {
-        try {
-            const errors = this.validator.answer();
-            if (errors.length > 1)
-                return this.res.status(statuses.NOT_ACCEPTABLE).json({ errors });
+		// Invite friend.
+		friend.friendInvites.push(this.user.id);
+		await friend.save();
 
-            let friendInvite = this.user.friendInvites.find(i => i._id.toHexString() === id);
-            if (!friendInvite) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('NotFound %s', 'Friend invitation'))
-                )
-            }
+		// Send notification to other user.
+		i18n.setLocale(friend.locale);
+		new SendNotificationJob({
+			title: i18n.__('NewFriendInvitationTitle'),
+			body: i18n.__('NewFriendInvitationBody %s', this.user.getFullname()),
+			receiver: friend._id,
+			sender: this.user.id,
+			type: types.NewFriendRequest
+		});
 
-            let friend = await User.findById(id);
-            const { status } = this.req.body;
+		return this.res.status(statuses.CREATED_OR_UPDATED).json({
+			status: this.__('FriendRequestSent')
+		});
+	}
 
-            // Add other user as friend to current user.
-            let accepted = false;
-            if (status === 'accepted') {
-                this.user.friends.push(friendInvite);
-                await this.user.save();
-                accepted = true;
-                // Send NOTIFICATION to friend to tell him current user accepted him/her.
-            }
-            await this.user.removeInvite(id);
+	async answer(id) {
+		const errors = this.validator.answer();
+		if (errors.length > 1)
+			return this.res.status(statuses.NOT_ACCEPTABLE).json({ errors });
 
-            // Add current user to other user as friends.
-            friend.friends.push(this.user.id);
-            await friend.save();
+		let friendInvite = this.user.friendInvites.find(i => i._id.toString() === id);
+		if (!friendInvite) {
+			throw new NotFoundError(this.__, 'Friend Invitation');
+		}
 
-            return this.res.status(statuses.CREATED_OR_UPDATED).json({
-                status: this.__(accepted ? 'FriendRequestAccepted' : 'FriendRequestRefused')
-            });
-        } catch (e) {
-            return this.res.status(statuses.INTERNAL_SERVER_ERROR).json(
-                error(codes.INTERNAL_ERROR, this.__('NotFound %s', 'Friend'))
-            );
-        }
-    }
+		// Get status in body
+		const { status } = this.req.body;
 
-    async remove(id) {
-        try {
-            let friend = this.user.friends.find(f => f._id.toHexString() === id);
-            if (!friend) {
-                return this.res.status(statuses.NOT_ACCEPTABLE).json(
-                    error(codes.UNACCEPTABLE_CONTENT_ERROR, this.__('NotFound %s', 'Friend'))
-                )
-            }
-            await this.user.removeFriend(id);
-            await friend.removeFriend(this.user.id);
-            return this.res.json({ status: this.__('Removed %s', 'Friend') });
-        } catch (e) {
-            return this.res.status(statuses.INTERNAL_SERVER_ERROR).json(
-                error(codes.INTERNAL_ERROR, this.__('NotFound %s', 'Friend'))
-            );
-        }
-    }
+		await Notification.update({ user: this.user.id, sender: friendInvite._id, type: types.NewFriendRequest }, { seen: true }, { multi: true });
+		// Add other user as friend to current user.
+		let accepted = false;
+		if (status === 'accepted') {
+			// Add user to friends.
+			accepted = true;
+			this.user.friends.push(friendInvite);
+			await this.user.save();
 
-    async invites() {
-        try {
-            const { friendInvites } = this.user;
-            return this.res.json({ friendInvites: await Promise.all(friendInvites.map(async f => await f.toShort())) });
-        } catch (e) {
-            return this.res.status(statuses.INTERNAL_SERVER_ERROR).json(
-                error(codes.INTERNAL_ERROR, this.__('InternalError'))
-            );
-        }
-    }
+			// Add current user to other user as friends.
+			friendInvite.friends.push(this.user.id);
+			await friendInvite.save();
+
+			// Send NOTIFICATION to friend to tell him current user accepted him/her.
+			i18n.setLocale(friendInvite._id)
+			new SendNotificationJob({
+				title: i18n.__('NewFriendTitle'),
+				body: i18n.__('NewFriendBody %s', this.user.getFullname()),
+				receiver: friendInvite._id,
+				sender: this.user.id,
+				type: types.NewFriend
+			});
+		}
+
+		// Remove friend invite
+		await this.user.removeInvite(id);
+
+		return this.res.status(statuses.CREATED_OR_UPDATED).json({
+			status: this.__(accepted ? 'FriendRequestAccepted' : 'FriendRequestRefused')
+		});
+	}
+
+	async remove(id) {
+		let friend = this.user.friends.find(f => f._id.toString() === id);
+		if (!friend) {
+			throw new NotFoundError(this.__, 'Friend');
+		}
+		await this.user.removeFriend(id);
+		await friend.removeFriend(this.user.id);
+		return this.res.json({ status: this.__('Removed %s', 'Friend') });
+	}
 }

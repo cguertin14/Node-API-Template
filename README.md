@@ -1,9 +1,9 @@
 # Summary
 
-REST API Template written in Node.js.
+REST API Template in Node JS
 
 ## Status
-[![Build Status](https://travis-ci.com/cguertin14/****PROJECTNAME****)](https://travis-ci.com/cguertin14/*****PROJECTNAME*****)
+[![Build Status](https://travis-ci.com/cguertin14/Node-REST-API-Template.svg?token=wMAojsLhP9yFixAFFg69&branch=master)](https://travis-ci.com/cguertin14/Node-REST-API-Template)
 
 ## Author 
 

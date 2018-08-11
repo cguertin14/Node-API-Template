@@ -1,12 +1,12 @@
 import _ from 'lodash';
-import countries from '../../config/json/countries.json';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
 import mongoose from 'mongoose';
 import findOrCreate from 'mongoose-findorcreate';
 import uniqueValidator from 'mongoose-unique-validator';
-import { baseConfig, dateConfig, baseConfigUrl } from '../../utils/mongoose';
+import { baseConfig, dateConfig, refValidator, baseConfigUrl, countryConfig } from '../../utils/mongoose';
 import StripeHelper from '../../config/payments/StripeHelper';
+import { s3 } from '../../config/json/services.json';
 
 const UserSchema = new mongoose.Schema({
 	email: baseConfig(String, {
@@ -31,24 +31,23 @@ const UserSchema = new mongoose.Schema({
 	gender: baseConfig(String, {
 		validate: {
 			validator(val) {
-				return /(male|female|other)/.test(val);
+				return /\b(male|female|other)\b/.test(val);
 			},
 			message: '{VALUE} must be male, female or other.'
 		}
 	}),
-	phoneNumber: baseConfig(String, {
+	phoneNumber: {
+		type: String,
 		required: false,
-	}),
-	country: baseConfig(String, {
-		validate: {
-			validator(val) {
-				return countries.map(c => c.name).find(c => c === val);
-			},
-			message: '{VALUE} is not a valid country.'
+		set: (val) => {
+			if (val === null || val === '')
+				return undefined;
+			return val;
 		}
-	}),
+	},
+	country: countryConfig(),
 	defaultCard: baseConfig(String, { required: false }),
-	profileImageUrl: baseConfigUrl({ required: false, default: 'https://s3.amazonaws.com/nightplanner/profile_default.png' }), // TODO: Change url of S3 repository.
+	profileImageUrl: baseConfigUrl({ required: false, default: `${s3.url}/profile_default.png` }),
 	facebookId: {
 		type: String,
 		required: false,
@@ -93,51 +92,22 @@ UserSchema.methods.toJSON = function () {
 		'_id',
 		'email',
 		'gender',
-		'phoneNumber',
 		'firstName',
 		'lastName',
 		'country',
-		'profileImageUrl'
+		'profileImageUrl',
 	]);
-
-	toReturn = _.assign({}, toReturn, {
-		fullName: this.getFullname()
-	});
 
 	if (user.birthdate)
 		toReturn = _.assign({}, toReturn, { birthdate: moment(user.birthdate).format('YYYY-MM-DD') });
-
-	return toReturn;
-};
-
-UserSchema.methods.toFull = function () {
-	let user = this.toObject();
-	let toReturn = _.pick(user, [
-		'_id',
-		'email',
-		'gender',
-		'phoneNumber',
-		'firstName',
-		'lastName',
-		'country',
-		'profileImageUrl'
-	]);
-
-	toReturn = _.assign({}, toReturn, {
-		fullName: this.getFullname()
-	});
-
-	if (user.birthdate)
-		toReturn = _.assign({}, toReturn, { birthdate: moment(user.birthdate).format('YYYY-MM-DD') });
+	if (user.phoneNumber && user.phoneNumber !== '')
+		toReturn = _.assign({}, toReturn, { phoneNumber: user.phoneNumber });
 
 	return toReturn;
 };
 
 UserSchema.methods.toShort = function () {
-	let user = this.toObject();
-	return _.assign({}, user, {
-		fullName: this.getFullname(),
-	});
+	return _.pick(this.toObject(), ['_id', 'firstName', 'lastName', 'profileImageUrl']);
 };
 
 UserSchema.methods.removeFriend = function (id) {
@@ -174,7 +144,7 @@ UserSchema.statics.existsWithEmail = async function (email) {
 UserSchema.statics.findByCredentials = async function (email, password) {
 	let foundUser = await User.findOne({ email });
 	if (!foundUser) return;
-	await bcrypt.compare(password, foundUser.password);
+	if (!await bcrypt.compare(password, foundUser.password)) return;
 	return foundUser;
 };
 
@@ -182,7 +152,7 @@ UserSchema.statics.findByCredentials = async function (email, password) {
 UserSchema.pre('save', async function () {
 	let user = this;
 
-    if (!user.isModified('password')) return Promise.resolve();
+	if (!user.isModified('password')) return Promise.resolve();
 
 	const salt = await bcrypt.genSalt(10);
 	user.password = await new Promise((resolve, reject) => {

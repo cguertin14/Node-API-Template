@@ -1,45 +1,50 @@
-import stripePackage from 'stripe';
+import stripePackage, { StripeResource } from 'stripe';
 import { stripe as config } from '../json/services.json';
 
 /**
  * Stripe Helper class.
  */
 export default class StripeHelper {
-    constructor(id = null) {
-        const stripe = config['development']; // TODO: change to [process.env.NODE_ENV];
-        this.stripe = stripePackage(stripe.sk);
-        this.cusId = id;
-    }
+	constructor(id = null) {
+		const stripe = config['development']; // TODO: change to [process.env.NODE_ENV];
+		this.stripe = stripePackage(stripe.sk);
+		this.customerId = id;
+	}
 
-    async asCustomer() {
-        return await this.stripe.customers.retrieve(this.cusId);
-    }
+	async asCustomer() {
+		return await this.stripe.customers.retrieve(this.customerId);
+	}
 
-    async createCustomer(email) {
-        return await this.stripe.customers.create({ email });
-    }
+	async createCustomer(email) {
+		return await this.stripe.customers.create({ email });
+	}
 
-    async cards() {
-        return await this.stripe.customers.listCards(this.cusId);
-    }
+	async cards() {
+		return await this.stripe.customers.listCards(this.customerId);
+	}
 
-    async createCard(source) {
-        return await this.stripe.createSource(this.cusId, { source });
-    }
+	async createCard(source) {
+		return await this.stripe.customers.createSource(this.customerId, { source });
+	}
 
-    async getCard(id) {
-        return await this.stripe.customers.retrieveCard(id);
-    }
+	async getCard(cardId) {
+		return await this.stripe.customers.retrieveCard(this.customerId, cardId);
+	}
 
-    async deleteCard(id) {
-        return await this.stripe.customers.deleteCard(this.cusId, id);
-    }
+	async deleteCard(cardId) {
+		return await this.stripe.customers.deleteCard(this.customerId, cardId);
+	}
 
-    async createCharge(amount) {
-        return await this.stripe.charges.create({
-            amount,
-            currency: 'cad',
-            customer: this.cusId,
-        });
-    }
+	async setDefaultCard(cardId) {
+		return await this.stripe.customers.update(this.customerId, {
+			default_source: cardId
+		});
+	}
+
+	async createCharge({ amount, description, source }) {
+		let data = { amount, description, source,	currency: 'cad'	};
+		if (source.substring(0,3) !== 'tok')
+			data.customer = this.customerId;
+		return await this.stripe.charges.create(data);
+	}
 }

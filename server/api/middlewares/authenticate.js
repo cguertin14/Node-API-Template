@@ -1,4 +1,5 @@
-import passport from 'passport';
+import passport from 'passport/lib';
+import bcrypt from 'bcryptjs';
 import { isTokenBlacklisted, setTokens, tokenValidation } from '../../utils/tokens';
 
 // Bearer middleware
@@ -7,15 +8,20 @@ export const bearer = (req, res, next) => {
         try {
             // Error thrown
             if (err) return next(err);
-            // Check if token is blacklisted
-            if (await isTokenBlacklisted(req)) return res.status(401).json({ error: 'Token is blacklisted.' });
             // Authentication Error
             if (!user) return res.status(401).json({ error: 'Unauthenticated.' });
+            // Check if token is blacklisted
+            if (await isTokenBlacklisted(req)) return res.status(401).json({ error: 'Token is blacklisted.' });
             // Set user on req.
             req.user = user;
+            // Set user locale
+            if (req.locale !== user.locale) {
+                user.locale = req.locale;
+                await user.save();
+            }
             // User is connected.
             next();
-        } catch (e) {            
+        } catch (e) {
             return tokenValidation(e, res);
         }
     })(req, res, next);
@@ -33,6 +39,7 @@ export const login = (req, res, next) => {
             if (err) {
                 return res.send(err);
             }
+
             // Set locale
             const { locale } = req.cookies;
             if (locale) {
@@ -45,7 +52,7 @@ export const login = (req, res, next) => {
             const { token, refreshToken } = setTokens(user, res);
             return res.json({
                 status: res.__('LoggedIn'),
-                user,
+                user: await user.toFull(),
                 token,
                 refreshToken
             });

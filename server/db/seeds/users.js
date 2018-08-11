@@ -7,40 +7,43 @@ import asyncForEach from './../../utils/asyncForEach';
 import countries from '../../config/json/countries.json';
 
 export default class UsersCollectionSeeder extends Seeder {
-    async run() {   
+    async run() {
         const mappedCountries = countries.map(c => c.name);
         
         await User.create({
-            email: 'test@np.com',
-            password: 'nightplanner',
+            email: 'test@app.com',
+            password: 'test',
             phoneNumber: faker.phone.phoneNumber(),
             firstName: 'TestFirstname',
             country: _.shuffle(mappedCountries)[0],
-            stripe_customer_id: 'cus_D8jkCt1HKtkdwp',
-            defaultCard: 'card_1CiSGyEa3ylmHz49s76VEOjR',
+            stripe_customer_id: 'cus_DGFLWhfqICqZps',
+            defaultCard: 'card_1CpirdEa3ylmHz4947h8rAvF',
+            isAdmin: true,
             lastName: 'TestLastname',
-            gender: 'male',
-        });
-
-        await User.create({
-            email: 'test2@np.com',
-            password: 'nightplanner',
-            phoneNumber: faker.phone.phoneNumber(),
-            firstName: 'Test2Firstname',
-            country: _.shuffle(mappedCountries)[0],
-            stripe_customer_id: 'cus_D8jkCt1HKtkdwp',
-            defaultCard: 'card_1CiSGyEa3ylmHz49s76VEOjR',
-            lastName: 'Test2Lastname',
             gender: 'male',
             birthdate: moment('1998-04-14').toDate(),
         });
 
-        await asyncForEach(_.range(0, 20), async index => {
+        await User.create({
+            email: 'test2@app.com',
+            password: 'test',
+            phoneNumber: faker.phone.phoneNumber(),
+            firstName: 'Test2Firstname',
+            country: _.shuffle(mappedCountries)[0],
+            stripe_customer_id: 'cus_DGFL6BKXVROUIA',
+            defaultCard: 'card_1CpiryEa3ylmHz49SgL92gE2',
+            lastName: 'Test2Lastname',
+            isAdmin: true,
+            gender: 'male',
+            birthdate: moment('1998-04-14').toDate(),
+        });
+
+        await asyncForEach(_.range(0, 40), async index => {
             const firstName = faker.name.firstName(1),
                   lastName = faker.name.lastName(1);
             await User.create({
                 email: faker.internet.email(firstName, lastName, 'live.ca'),
-                password: 'nightplanner',
+                password: 'test',
                 firstName,
                 country: _.shuffle(mappedCountries)[0],
                 phoneNumber: faker.phone.phoneNumber(),
