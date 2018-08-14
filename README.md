@@ -1,6 +1,6 @@
 # Summary
 
-REST API Template in Node JS (With PostgreSQL)
+REST API Template in Node JS (With MongoDB)
 
 ## Status
 [![Build Status](https://travis-ci.com/cguertin14/Node-REST-API-Template.svg?branch=master)](https://travis-ci.com/cguertin14/Node-REST-API-Template)
