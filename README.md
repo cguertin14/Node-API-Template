@@ -3,7 +3,7 @@
 REST API Template in Node JS (With PostgreSQL)
 
 ## Status
-[![Build Status](https://travis-ci.com/cguertin14/Node-Mongo-Redis-Api.svg?token=wMAojsLhP9yFixAFFg69&branch=master)](https://travis-ci.com/cguertin14/Node-Mongo-Redis-Api)
+[![Build Status](https://travis-ci.com/cguertin14/Node-REST-API-Template.svg?branch=master)](https://travis-ci.com/cguertin14/Node-REST-API-Template)
 
 ## Author 
 
